@@ -1,0 +1,95 @@
+var mod13q1 = ee.ImageCollection("MODIS/MOD13Q1"),
+    mod17a2 = ee.ImageCollection("MODIS/006/MOD17A2H");
+    
+// Script to resample (to 0.5 degree) and extract MODIS GPP data.
+
+var scaleimg = function(image) {
+  var kgtog = image.multiply(1000)
+  var scaledGPP=kgtog.multiply(.0001);
+  var perday = scaledGPP.divide(8);
+  return(image.addBands(perday))
+}
+
+
+//Load imagery----------------
+var collection = ee.ImageCollection('MODIS/006/MOD17A2H').select('Gpp');
+var col_scaled = (collection.map(scaleimg));
+print(col_scaled)
+
+// define site points 
+var AUDpoint  = ee.Geometry.Point(-110.509, 31.591).buffer(25000);
+var COPpoint  = ee.Geometry.Point(-109.66, 38.162).buffer(25000);
+var FUFpoint  = ee.Geometry.Point(-111.762,	35.089).buffer(25000);
+var LPApoint  = ee.Geometry.Point(-110.438, 24.1293).buffer(25000);
+var MPJpoint  = ee.Geometry.Point(-106.239,	34.43828).buffer(25000);
+var RAYpoint  = ee.Geometry.Point(-110.537,	29.741).buffer(25000);
+var SCCpoint = ee.Geometry.Point(-116.45,	33.61).buffer(25000);
+var SCFpoint = ee.Geometry.Point(-116.45,	33.808).buffer(25000);
+var SCWpoint = ee.Geometry.Point(-116.455,	33.605).buffer(25000);
+var SEGpoint = ee.Geometry.Point(-106.7,	34.360).buffer(25000);
+var SENpoint = ee.Geometry.Point(-106.68,	34.358).buffer(25000);
+var SESpoint  = ee.Geometry.Point(-106.745,	34.335).buffer(25000);
+var SO4point = ee.Geometry.Point(-116.6406,	33.385).buffer(25000);
+var SO2point = ee.Geometry.Point(-116.6228,	33.374).buffer(25000);
+var SO3point = ee.Geometry.Point(-116.6226,	33.377).buffer(25000);
+var SRCpoint = ee.Geometry.Point(-110.8395,	31.908).buffer(25000);
+var SRGpoint  = ee.Geometry.Point(-110.828,	31.789).buffer(25000);
+var SRMpoint  = ee.Geometry.Point(-110.866, 31.821).buffer(25000);
+var TESpoint = ee.Geometry.Point(-109.298,	27.8446).buffer(25000);
+var VCMpoint = ee.Geometry.Point(-106.532,	35.888).buffer(25000);
+var VCPpoint = ee.Geometry.Point(-106.597,	35.864).buffer(25000);
+var WHSpoint = ee.Geometry.Point(-110.052,	31.744).buffer(25000);
+var WJSpoint = ee.Geometry.Point(-105.862,	34.426).buffer(25000);
+var WKGpoint  = ee.Geometry.Point(-109.942,	31.737).buffer(25000);
+
+var titleAUD= 'AUDpoint';  
+var titleCOP= 'COPpoint';  
+var titleFUF= 'FUFpoint';
+var titleLPA= 'LPApoint';
+var titleMPJ= 'MPJpoint';
+var titleRAY= 'RAYpoint';
+var titleSCC= 'SCCpoint';
+var titleSCF= 'SCFpoint';
+var titleSCW= 'SCWpoint'; 
+var titleSEG= 'SEGpoint'; 
+var titleSEN= 'SENpoint';
+var titleSES= 'SESpoint';
+var titleSO4= 'SO4point';
+var titleSO2= 'SO2point';
+var titleSO3= 'SO3point';
+var titleSRC= 'SRCpoint';
+var titleSRG= 'SRGpoint';
+var titleSRM= 'SRMpoint';
+var titleTES= 'TESpoint';
+var titleVCM= 'VCMpoint';
+var titleVCP= 'VCPpoint';
+var titleWHS= 'WHSpoint';
+var titleWJS= 'WJSpoint';
+var titleWKG= 'WKGpoint';
+
+
+// Create and print the charts.
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), AUDpoint, ee.Reducer.mean()), titleAUD);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), COPpoint, ee.Reducer.mean()), titleCOP);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), FUFpoint, ee.Reducer.mean()), titleFUF);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), LPApoint, ee.Reducer.mean()), titleLPA);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), MPJpoint, ee.Reducer.mean()), titleMPJ);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), RAYpoint, ee.Reducer.mean()), titleRAY);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), SCCpoint, ee.Reducer.mean()), titleSCC);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), SCFpoint, ee.Reducer.mean()), titleSCF);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), SCWpoint, ee.Reducer.mean()), titleSCW);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), SEGpoint, ee.Reducer.mean()), titleSEG);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), SENpoint, ee.Reducer.mean()), titleSEN);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), SESpoint, ee.Reducer.mean()), titleSES);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), SO4point, ee.Reducer.mean()), titleSO4);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), SO2point, ee.Reducer.mean()), titleSO2);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), SO3point, ee.Reducer.mean()), titleSO3);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), SRCpoint, ee.Reducer.mean()), titleSRC);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), SRGpoint, ee.Reducer.mean()), titleSRG);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), SRMpoint, ee.Reducer.mean()), titleSRM);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), TESpoint, ee.Reducer.mean()), titleTES);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), VCMpoint, ee.Reducer.mean()), titleVCM);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), VCPpoint, ee.Reducer.mean()), titleVCP);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), WJSpoint, ee.Reducer.mean()), titleWJS);
+print(ui.Chart.image.series(col_scaled.select('Gpp_1'), WKGpoint, ee.Reducer.mean()), titleWKG);
+
