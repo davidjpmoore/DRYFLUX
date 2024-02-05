@@ -2,21 +2,23 @@ library(raster)
 library(sp)
 library(rgdal)
 
-setwd("C:/Users/farellam/Documents/DryFlux")
+main_directory <- "C:/Users/lindseybell/OneDrive - University of Arizona/Desktop/DRYFLUX/"
+setwd(main_directory)
 
 ##############################################################################
 ######################### meta data for tower sites###########################
 ##############################################################################
 #load site locations
-sites <- read.csv("C:/Users/farellam/Documents/DryFlux/data/site_locs.csv")
+sites <- read.csv("./data/site_locs.csv")
 #sites$site <- tolower(sites$site)
+
 #convert site locations into a spatial points df
 coordinates(sites)= ~ long + lat
 latlon = CRS('+proj=longlat +datum=WGS84 +no_defs')
 crs(sites) <- latlon
 
 ####ELEVATIONS FOR US/MEX SITES####
-setwd("Z:/SRER/Martha/DryFlux/data/SRTM")
+setwd("./data/SRTM")
 
 elev1 <- getData('SRTM', lon=-116, lat=33)
 #plot(elev1)
@@ -69,8 +71,10 @@ elev11 <- getData('SRTM', lon=-107, lat=23)
 allelev <- c(elev1, elev2, elev3, elev4, elev5, elev6, elev7, elev8)
 allelev$fun <- mean
 
-#mos <- do.call(mosaic, allelev)
-#writeRaster(mos, "Z:/SRER/Martha/DryFlux/data/spatial/SoAzelev.tif", format="GTiff")
+setwd(main_directory)
+setwd("./data/spatial")
+mos <- do.call(mosaic, allelev)
+writeRaster(mos, "./SoAzelev.tif", format="GTiff")
 
 
 #rename the column names for all of the elevation datasets
@@ -114,20 +118,21 @@ colnames(final) <- c("site", "MAT", "MAP")
 exp_var <- merge(final, elevation, by="site")
 
 
-#colnames(exp_var) <- c("site", "WorldClimMAT", "WorldClimMAP", "SRTMelev")
-#exp_var$site <- tolower(exp_var$site)
-#sites <- read.csv("Z:/SRER/Martha/DryFlux/data/site_locs.csv")
-#sites$site <- tolower(sites$site)
-#sites <- sites[,-1]
-#data <- merge(sites, exp_var, by="site")
-#write.csv(data, "Z:/SRER/Martha/DryFlux/data/site_meta.csv")
+colnames(exp_var) <- c("site", "WorldClimMAT", "WorldClimMAP", "SRTMelev")
+exp_var$site <- tolower(exp_var$site)
+setwd(main_directory)
+sites <- read.csv("./data/site_locs.csv")
+sites$site <- tolower(sites$site)
+sites <- sites[,-1]
+data <- merge(sites, exp_var, by="site")
+write.csv(data, "./data/site_meta.csv")
 
 
 ##############################################################################
 ##########################Elevation for OzFlux sites##########################
 ##############################################################################
 #load site locations
-sites <- read.csv("C:/Users/farellam/Documents/DryFlux/data/global_locs.csv")
+sites <- read.csv("./data/global_locs.csv")
 #sites$site <- tolower(sites$site)
 #convert site locations into a spatial points df
 coordinates(sites)= ~ long + lat
@@ -135,12 +140,14 @@ latlon = CRS('+proj=longlat +datum=WGS84 +no_defs')
 crs(sites) <- latlon
 
 
+setwd("./data/SRTM")
+
 elev <- getData('SRTM', lon=-16, lat=16)
 e1 <- raster::extract(elev,sites)
 e1 <- cbind.data.frame(sites$SITE_ID,e1)
 e1 <- e1[complete.cases(e1), ]
-plot(elev)
-plot(sites, add=TRUE)
+#plot(elev)
+#plot(sites, add=TRUE)
 
 elev <- getData('SRTM', lon=-2, lat=36)
 e2 <- raster::extract(elev,sites)
@@ -163,31 +170,31 @@ e5 <- cbind.data.frame(sites$SITE_ID,e5)
 e5 <- e5[complete.cases(e5), ]
 
 elev <- getData('SRTM', lon=115, lat=-31)
-plot(elev)
+#plot(elev)
 e6 <- raster::extract(elev,sites)
 e6 <- cbind.data.frame(sites$SITE_ID,e6)
 e6 <- e6[complete.cases(e6), ]
 
 elev <- getData('SRTM', lon=140, lat=-34)
-plot(elev)
+#plot(elev)
 e7 <- raster::extract(elev,sites)
 e7 <- cbind.data.frame(sites$SITE_ID,e7)
 e7 <- e7[complete.cases(e7), ]
 
 elev <- getData('SRTM', lon=146, lat=-34)
-plot(elev)
+#plot(elev)
 e8 <- raster::extract(elev,sites)
 e8 <- cbind.data.frame(sites$SITE_ID,e8)
 e8 <- e8[complete.cases(e8), ]
 
 elev <- getData('SRTM', lon=145, lat=-36)
-plot(elev)
+#plot(elev)
 e9 <- raster::extract(elev,sites)
 e9 <- cbind.data.frame(sites$SITE_ID,e9)
 e9 <- e9[complete.cases(e9), ]
 
 elev <- getData('SRTM', lon=150, lat=-33)
-plot(elev)
+#plot(elev)
 e10 <- raster::extract(elev,sites)
 e10 <- cbind.data.frame(sites$SITE_ID,e10)
 e10 <- e10[complete.cases(e10), ]
@@ -220,7 +227,8 @@ elevation <- do.call(rbind, all)
 #combine the MAP/MAT dataframe with the elevation dataframe
 exp_var <- merge(final, elevation, by="site")
 
-write.csv(exp_var, "C:/Users/farellam/Documents/DryFlux/data/global_meta.csv")
+setwd(main_directory)
+write.csv(exp_var, "C./data/global_meta.csv")
 
 
 ##############################################################################
