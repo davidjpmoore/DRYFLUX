@@ -1,12 +1,13 @@
 # Load necessary libraries
 library(terra)
 library(tidyverse)
+library(raster)
 
 # Define paths to files - Remember to update these paths according to your local setup
 
-pathtoDryFluxGPP_SingleMonth <- "path/to/single/month/file.tif"  # Single month GPP file
-pathtoDryFluxGPP_YearFolder <- "path/to/yearly/files/folder"  # Folder with all monthly GPP files for a year
-pathtoDrylandMask <- "path/to/dryland/mask/file.shp"  # Dryland mask file - it says 2014 but it's used for all years
+pathtoDryFluxGPP_SingleMonth <- "./data/DRYFLUX_Outputs_MB/DF_X2000Apr2000.tif"  # Single month GPP file
+pathtoDryFluxGPP_YearFolder <- "./data/DRYFLUX_Outputs_MB/DryFlux2000"  # Folder with all monthly GPP files for a year
+pathtoDrylandMask <- "./data/spatial/Drylands_dataset_2007/drylands_UNCCD_CBD_july2014.shp"  # Dryland mask file - it says 2014 but it's used for all years
 
 #Examples for my system
 #pathtoDryFluxGPP_SingleMonth <- "/.../DryFlux_spatial/DryFlux zip/DryFlux2001/DF_X2001Jan2001.tif"  
@@ -24,10 +25,10 @@ drylandMask <- vect(pathtoDrylandMask)
 gppDrylandMasked <- mask(gppRaster, drylandMask)
 
 # Plotting the masked GPP data
-plot(gppDrylandMasked, main = "Dryland GPP - Jan 2001")
+plot(gppDrylandMasked, main = "Dryland GPP - Apr 2000")
 
 #add color customization if you want
-plot(gppDrylandMasked, main = "Dryland GPP - Jan 2001", col= rev(topo.colors(50)))
+plot(gppDrylandMasked, main = "Dryland GPP - Apr 2000", col= rev(topo.colors(50)))
 
 # If needed, adjust plotting parameters according to your preferences or requirements
 
