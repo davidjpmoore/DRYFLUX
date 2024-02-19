@@ -65,3 +65,80 @@ for (i in 1:nrow(filesDF)) {
   # ggsave(filename = sprintf("GPP_Plot_%s_%s.png", filesDF$year[i], month.abb[month(gppDrylandMasked)]), plot = last_plot())
 }
 
+#===============AVG GPP per pixel using all raster outputs provided=============
+pathtoDryFluxGPP_AvgOutputFolder <- "./data/DRYFLUX_Avg_Outputs"  # Folder to store outputs from the code below that averages monthly and yearly dryflux outputs
+pathtoDryFluxGPP_YearFolder <- "./data/DRYFLUX_Outputs_MB"  # Folder with all annual folders
+
+# Making a list of folders in DF output folder. List should be as long as the number of years of annual data (currently 17)
+annual_files <- list.dirs(pathtoDryFluxGPP_YearFolder, full.names = TRUE, recursive = FALSE)
+
+# Loop through each year folder to create annual averages and store them in the avg output folder
+for (i in annual_files) {
+  # Get year # from each folder name
+  year <- basename(i)
+  
+  # Get list of monthly rasters in folder for each year; create a list to store rasters for averaging 
+  monthly_rasters <- list.files(i, pattern = "DF_X\\d{4}[A-Za-z]{3}\\d{4}\\.tif$", full.names = TRUE)
+  rast_for_avg <- list()
+  
+  # Loop through each month in the annual folder
+  for (i in monthly_rasters) {
+    # Read data in each raster and add to list (rast_for_avg) created above
+    rast_data <- rast(i)
+    rast_for_avg[[length(rast_for_avg) + 1]] <- rast_data
+  }
+  
+  # Create raster stack and compute avg per pixel 
+  stacked_rast <- rast(rast_for_avg)
+  avg_rast <- mean(stacked_rast)
+  
+  # Specify the output file name for the average raster
+  output_file_for_avg <- file.path(pathtoDryFluxGPP_AvgOutputFolder, paste0("average_", year, ".tif"))
+  
+  # Write the average raster to a new GeoTIFF file
+  writeRaster(avg_rast, filename = output_file_for_avg, overwrite = TRUE)
+  
+  # Just extra- printing a message to confirm create of each avg raster
+  cat("Average raster for", year, "has been created.\n")
+}
+
+
+
+#================================================================================
+# Creating total avg (avgeraging annual averages into one raster)
+
+pathtoDryFluxGPP_AvgOutputFolder <- "./data/DRYFLUX_Avg_Outputs"  # Folder to store outputs from the code below that averages monthly and yearly dryflux outputs
+pathtoDryFluxGPP_YearFolder <- "./data/DRYFLUX_Avg_Outputs/Annual_Averages"  # Folder with all annual folders
+
+# Making a list of folders in DF output folder. List should be as long as the number of years of annual data (currently 17)
+annual_files <- list.files(pathtoDryFluxGPP_YearFolder, full.names = TRUE, recursive = FALSE)
+
+# Loop through each year raster to create a single average for 2000-2016 and store it in the avg output folder
+for (i in annual_files) {
+  # Get year from each folder name
+  year <- basename(i)
+  
+  # Get list of monthly rasters in folder for each year; create a list to store rasters for averaging 
+  monthly_rasters <- list.files(i, pattern = "average_DF_X\\d{4}[A-Za-z]{3}\\d{4}\\.tif$", full.names = TRUE)
+  rast_for_avg <- list()
+  
+  # Loop through each month in the annual folder
+  for (i in monthly_rasters) {
+    # Read data in each raster and add to list (rast_for_avg) created above
+    rast_data <- rast(i)
+    rast_for_avg[[length(rast_for_avg) + 1]] <- rast_data
+  }
+  
+  # Create raster stack and compute avg per pixel 
+  stacked_rast <- rast(rast_for_avg)
+  avg_rast <- mean(stacked_rast)
+  
+  # Specify the output file name for the average raster
+  output_file_for_avg <- file.path(pathtoDryFluxGPP_AvgOutputFolder, paste0("average_", year, ".tif"))
+  
+  # Write the average raster to a new GeoTIFF file
+  writeRaster(avg_rast, filename = output_file_for_avg, overwrite = TRUE)
+  
+  # Just extra- printing a message to confirm create of each avg raster
+  cat("Average raster for", year, "has been created.\n")
+  }
