@@ -133,6 +133,11 @@ for (i in annual_files) {
   output_file_for_avg <- file.path(pathtoDryFluxGPP_AvgOutputFolder, "2000_2016_masked_total_average.tif")
   
   # Write the avg raster to a new tif file
-  writeRaster(avg_rast, filename = output_file_for_avg, overwrite = TRUE)
+  writeRaster(avg_rast_masked, filename = output_file_for_avg, overwrite = TRUE)
 }
 
+#==================Plotting Total Avg Output====================================
+
+pathtoDryFluxGPP_TotalAvgOutput <- "./data/DRYFLUX_Avg_Outputs/2000_2016_masked_total_average.tif"
+gppTA <- rast(pathtoDryFluxGPP_TotalAvgOutput)
+plot(gppTA, main = "Average Dryland GPP: 2000-2016", col= rev(topo.colors(50)))
