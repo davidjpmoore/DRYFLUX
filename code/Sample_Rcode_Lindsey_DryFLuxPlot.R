@@ -3,9 +3,10 @@ library(terra)
 library(tidyverse)
 library(raster)
 library(sf)
-library(magick)
 
 # Define paths to files - Remember to update these paths according to your local setup
+
+setwd("C:/Users/Asus PC/OneDrive - University of Arizona/Desktop/DRYFLUX")
 
 pathtoDryFluxGPP_SingleMonth <- "./data/DRYFLUX_Outputs_MB/DF_X2000Apr2000.tif"  # Single month GPP file
 pathtoDryFluxGPP_YearFolder <- "./data/DRYFLUX_Outputs_MB/DryFlux2000"  # Folder with all monthly GPP files for a year
@@ -155,21 +156,8 @@ make_az_sf <- function(esa_crs) {
 
 az_shape <- make_az_sf(esa_crs)
 
-cropped_raster <- mask(gppTA, az_shape)
-plot(cropped_raster)
+cropped_raster <- terra::crop(gppTA, az_shape)
+plot(cropped_raster, main = "Arizona Average Dryland GPP: 2000-2016", col= rev(topo.colors(50)))
 
+setwd("./data/DRYFLUX_Avg_Outputs")
 writeRaster(cropped_raster, filename = "az_gppTA.tif", overwrite = TRUE)
-
-pathtoAZ_gppTA <- "./data/DRYFLUX_Avg_Outputs/az_gppTA.tif"
-az_gppTA <- rast(pathtoAZ_gppTA)
-plot(az_gppTA, main = "Arizona Average Dryland GPP: 2000-2016", col= rev(topo.colors(50)))
-
-trim_image <- function(file, buffer_size = 20, buffer_color = "white") {
-  magick::image_read(file) |> 
-    magick::image_trim() |> 
-    magick::image_border(color = buffer_color, geometry = glue::glue("{buffer_size}x{buffer_size}")) |> 
-    magick::image_write(file)
-}
-
-trim_image(pathtoAZ_gppTA)
-
