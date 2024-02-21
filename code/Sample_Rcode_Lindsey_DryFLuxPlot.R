@@ -3,10 +3,12 @@ library(terra)
 library(tidyverse)
 library(raster)
 library(sf)
+library(ggrastr)
 
 # Define paths to files - Remember to update these paths according to your local setup
 
 setwd("C:/Users/Asus PC/OneDrive - University of Arizona/Desktop/DRYFLUX")
+setwd("C:/Users/lindseybell/OneDrive - University of Arizona/Desktop/DRYFLUX")
 
 pathtoDryFluxGPP_SingleMonth <- "./data/DRYFLUX_Outputs_MB/DF_X2000Apr2000.tif"  # Single month GPP file
 pathtoDryFluxGPP_YearFolder <- "./data/DRYFLUX_Outputs_MB/DryFlux2000"  # Folder with all monthly GPP files for a year
@@ -156,8 +158,30 @@ make_az_sf <- function(esa_crs) {
 
 az_shape <- make_az_sf(esa_crs)
 
-cropped_raster <- terra::crop(gppTA, az_shape)
-plot(cropped_raster, main = "Arizona Average Dryland GPP: 2000-2016", col= rev(topo.colors(50)))
+cropped_raster <- terra::crop(gppTA, az_shape, mask = TRUE)
+plot(cropped_raster, main = "Arizona Average Dryland GPP: 2000-2016", col= c("#EFB298", "#C39E4B", "#7D8737", "#437153", "#185661", "#0C325D")
+)
 
 setwd("./data/DRYFLUX_Avg_Outputs")
 writeRaster(cropped_raster, filename = "az_gppTA.tif", overwrite = TRUE)
+#================================Plotting w Eric's plot_median_map
+
+plot_agb_map <- function(agb_stack, subset, downsample = TRUE, path = "docs/fig", filename = "map_agb.png", ...) {
+  
+  agb_subset <- crop(agb_stack, subset, mask = TRUE)
+  
+  p_base <- ggplot(data = agb_subset) 
+  
+  #subset of colors from the scio package batlow_w palette
+  map_cols <- c("#EFB298", "#C39E4B", "#7D8737", "#437153", "#185661", "#0C325D")
+  
+  p <-
+    p_base +
+    scale_fill_gradientn(colours = map_cols, na.value = "transparent") +
+    theme_minimal(base_size = 10) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
+  return(p_base)
+}
+
+plot_agb_map(gppTA, subset = az_shape)
